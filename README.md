@@ -6,3 +6,4 @@ ln -s ~/.zprezto/modules/prompt/external/zprezto-prompt-rustacean/prompt_rustace
 
 Set `zstyle ':prezto:module:prompt' theme 'rustacean'` in `~/.zpreztorc`
 
+![](http://raw.github.com/wcaokaze/zprezto-prompt-rustacean/master/screenshot.png)
