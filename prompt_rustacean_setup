@@ -1,0 +1,61 @@
+
+function prompt_rustacean_precmd {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+
+  if (( $+functions[git-info] )); then
+    git-info
+  fi
+}
+
+function prompt_rustacean_setup {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+  prompt_opts=(cr percent subst)
+
+  autoload -Uz add-zsh-hook
+  add-zsh-hook precmd prompt_rustacean_precmd
+
+  zstyle ':prezto:module:prompt' managed 'yes'
+
+  zstyle ':prezto:module:editor:info:completing'       format '%B%F{red}?;%f%b'
+  zstyle ':prezto:module:editor:info:keymap:primary'   format ';'
+  zstyle ':prezto:module:editor:info:keymap:alternate' format '%B%F{magenta};%f%b'
+
+  zstyle ':prezto:module:git:info' verbose 'no'
+  zstyle ':prezto:module:git:info:branch' format '%F{green}::<%b>%f'
+  zstyle ':prezto:module:git:info:clean'     format '○'
+  zstyle ':prezto:module:git:info:indexed'   format '+'
+  zstyle ':prezto:module:git:info:unindexed' format '*'
+  zstyle ':prezto:module:git:info:untracked' format '?'
+  zstyle ':prezto:module:git:info:keys' format \
+    'branch' '%b' \
+    'status' '%F{cyan}"%C%i%I%u"%f'
+
+  PROMPT='%(?::$(
+    if [ $? -eq 130 ] ; then
+      echo '"'%F{green}Err%f(%F{cyan}\"Interrupted\"%f)'"'
+    fi
+  ))%(?::
+)'
+
+  PROMPT+='%F{3}$(pwd | sed -e "s|$(dirname $(dirname $(pwd)))/||" | sed -e "s|/|::|g")%f'
+
+  local git_format="'"
+  git_format+='${git_info:+${(e)git_info[branch]}}'
+  git_format+='(%F{cyan}"${git_info:+${(e)git_info[status]}}"%f)'
+  git_format+="'"
+
+  local non_repo_format="'()'"
+
+  PROMPT+='${git_info:+${(e)git_info[branch]}}'
+  PROMPT+='(${git_info:+${(e)git_info[status]}})'
+
+  PROMPT+='${editor_info[keymap]} '
+
+  RPROMPT='%F{8}%T%f'
+
+  SPROMPT='%F{green}Err%f(%F{yellow}format!%f(%F{cyan}"Did you mean {}?"%f, %r)) '
+}
+
+prompt_rustacean_setup "$@"
